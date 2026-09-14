@@ -1,4 +1,4 @@
-![pleca_Itgam](./pleca_itgam.jpg)
+![Banner SEP TECNM](./pleca_itgam.jpg)
 
 # DWSSR-2026b
 PROYECYO DE LA MATERIA DESAROLLO WEB SERVER SIDE RENDERING
