@@ -1,15 +1,21 @@
+//Funcion para manejar errores
 var createError = require('http-errors');
 var express = require('express');
+//importa para manejar rutas
 var path = require('path');
+//importa para manejar cookies
 var cookieParser = require('cookie-parser');
+//importa modullos para manejar logs 
 var logger = require('morgan');
 
+//importa las rutas de la aplicacion
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+//crea la aplicacion express
 var app = express();
 
-// view engine setup
+// configurar el motor de vista
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
