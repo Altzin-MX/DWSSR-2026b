@@ -1,15 +1,22 @@
+//Funcion para manejar errores de la aplicacoin
 var createError = require('http-errors');
+//Importa el framework express
 var express = require('express');
+//importa modulo para manejar rutas
 var path = require('path');
+//importa modulo para manejar cookies
 var cookieParser = require('cookie-parser');
+//importa modulo para manejar logs
 var logger = require('morgan');
 
+//importa las rutas de la aplicacion
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+//crea la aplicacoin express
 var app = express();
 
-// view engine setup
+// configura el motor de vista
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
