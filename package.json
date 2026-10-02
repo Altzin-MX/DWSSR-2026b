@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "DEBUG=dwssr-2026b:* node ./bin/www",
+    "start": "DEBUG=dwssr-2026b:* node ./server/bin/www",
     "greet": "echo 'Hello, World!'"
   },
   "dependencies": {
