@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node ./server/bin/www.js",
-    "dev": "DEBUG=dwssr-2026b:* node ./server/bin/www.js",
+    "dev": "DEBUG=dwssr-2026b:* nodemon ./server/bin/www.js",
     "greet": "echo 'Hola Mundo'"
   },
   "dependencies": {
