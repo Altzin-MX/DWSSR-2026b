@@ -13,12 +13,23 @@ import cookieParser from 'cookie-parser';
 // Importar módulo para generar logs
 import logger from 'morgan';
 
+// Importando el template engine Handlebars
+import hbs from 'hbs';
+
 // Importar biblioteca Debug
 import createDebug from 'debug';
 
 // Importar funciones para crear __dirname
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+
+//Importando el gestrador del helper
+import { registerViteHelper } from './lib/vite.js';
+
+//Arivos estatciso para producción
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '..', 'dist')));
+}
 
 // Crear el objeto Debug
 const debug = createDebug('dwssr-2026b:server');

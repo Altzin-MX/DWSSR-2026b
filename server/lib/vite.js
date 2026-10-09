@@ -1,56 +1,79 @@
-// biblioteca file stream
-import fs from 'node:fs';
-
-// biblioteca de rutas
+// Importar módulos necesarios
+import createError from 'http-errors';
+import express from 'express';
 import path from 'node:path';
-
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import createDebug from 'debug';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import hbs from 'hbs';
 
-// creando las variables de rutas
+// Importar las rutas de la aplicación
+import indexRouter from '#routes/index.js';
+import usersRouter from '#routes/users.js';
+
+// Importar el helper de Vite
+import { registerViteHelper } from './lib/vite.js';
+
+// Configurar Debug
+const debug = createDebug('dwssr-2026b:server');
+
+// Obtener las rutas del archivo actual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-/*
-Helper para Handlebars para que genere las etiquetas de Vite
+// Crear la aplicación Express
+debug('🔨 Creando backend');
 
-EN DESARROLLO: Conecta al servidor de desarrollo de Vite
-EN PRODUCCIÓN: Usa los compilados de Vite
-*/
+const app = express();
 
-export function viteAssetHelper() {
+// Configurar el motor de vistas
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
 
-    // Obtener modo de ejecución
-    const isDev = process.env.NODE_ENV !== 'production';
+// Registrar el helper de Vite
+registerViteHelper(hbs);
 
-    // Rescatando la URL del servidor de desarrollo
-    const devServer =
-        process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+// Configurar los middlewares
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-    // Si estamos en modo desarrollo
-    if (isDev) {
-
-        // En desarrollo, cargamos los archivos
-        // del front-end directamente del servidor
-        // de desarrollo de Vite
-
-        return `
-            <script type="module" src="${devServer}/@vite/client"></script>
-            <script type="module" src="${devServer}/main.js"></script>
-        `;
-    }
-
-    // En producción leemos el manifest
-    // y generamos las etiquetas de script y link
-    const manifestPath =
-        path.join(__dirname, '..', '..', 'dist', 'manifest.json');
-
-    // Si no existe el manifest
-    if (!fs.existsSync(manifestPath)) {
-        console.warn(
-            'Vite manifest not found. Run "npm run build" to generate it.'
-            return '';
-        );
-        return '';  
-    }
+// Servir archivos estáticos generados por Vite en producción
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '..', 'dist')));
 }
+
+// Servir archivos estáticos públicos
+debug('🔨 Configurando archivos estáticos');
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Registrar las rutas
+debug('🛣️ Registrando rutas');
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// Manejar rutas no encontradas (404)
+app.use((req, res, next) => {
+  next(createError(404));
+});
+
+// Manejador general de errores
+app.use((err, req, res, next) => {
+  res.locals.message = err.message;
+
+  // Mostrar detalles del error solamente en desarrollo
+  res.locals.error =
+    req.app.get('env') === 'development' ? err : {};
+
+  res.status(err.status || 500);
+
+  res.render('error');
+});
+
+// Exportar la aplicación para server/bin/www.js
+export default app;
