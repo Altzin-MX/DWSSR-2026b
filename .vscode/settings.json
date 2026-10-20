@@ -1,0 +1,10 @@
+{
+  // Tamaño de la fuente del editor (px)
+  "editor.fontSize": 25,
+  // Tamaño de la fuente de la terminal integrada (px)
+  "terminal.integrated.fontSize": 20,
+  // Tamaño de la indentación (espacios)
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
+}

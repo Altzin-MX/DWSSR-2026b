@@ -18,7 +18,7 @@ router.get("/", (req, res, _next) => {
 
   // Renderizar la página principal
   res.render("index", {
-    title: "Ricardo Arias Escárcega",
+    title: "ALFREDO ATZIN OROZCO RAMIREZ",
     counter,
     numbers,
   });
