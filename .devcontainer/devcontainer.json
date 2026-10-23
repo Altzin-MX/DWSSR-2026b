@@ -1,1 +1,30 @@
-{"image":"mcr.microsoft.com/devcontainers/universal:2"}
+// See https://containers.dev/implementors/json_reference/ for configuration reference
+{
+	"name": "Node.js & MongoDB",
+
+	"dockerComposeFile": "docker-compose.yml",
+
+	"service": "app",
+
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"remoteUser": "node",
+
+	// Extensión de MongoDB para VS Code
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mongodb.mongodb-vscode"
+			]
+		}
+	},
+
+	// Puertos de la aplicación y MongoDB
+	"forwardPorts": [
+		3000,
+		27017
+	],
+
+	// Instala las dependencias del proyecto
+	"postCreateCommand": "npm install"
+}
