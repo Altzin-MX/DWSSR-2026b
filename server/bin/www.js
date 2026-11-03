@@ -4,63 +4,28 @@
  * Module dependencies.
  */
 
-// Importar la aplicación Express
+// Importando Debug
+import createDebug from 'debug';
+import http from 'node:http';
 import app from '../app.js';
 
-// Importar Debug
-import createDebug from 'debug';
-
-// Importar módulo HTTP de Node.js
-import http from 'node:http';
-
-// Crear el objeto Debug
+// Creacion del objeto Debug
 const debug = createDebug('dwssr-2026b:server');
 
 /**
- * Obtener el puerto desde las variables de entorno
- * y configurarlo en Express.
- */
-
-const port = normalizePort(process.env.PORT || '3000');
-
-app.set('port', port);
-
-/**
- * Crear el servidor HTTP.
- */
-
-const server = http.createServer(app);
-
-/**
- * Escuchar en el puerto indicado
- * en todas las interfaces de red.
- */
-
-server.listen(port);
-
-server.on('error', onError);
-
-server.on('listening', onListening);
-
-/**
- * Normalizar el puerto.
- *
- * Puede devolver:
- * - Un número
- * - Un nombre de pipe
- * - false
+ * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
   const port = parseInt(val, 10);
 
   if (Number.isNaN(port)) {
-    // Named pipe
+    // named pipe
     return val;
   }
 
   if (port >= 0) {
-    // Número de puerto
+    // port number
     return port;
   }
 
@@ -68,7 +33,26 @@ function normalizePort(val) {
 }
 
 /**
- * Manejador del evento "error" del servidor HTTP.
+ * Get port from environment and store in Express.
+ */
+
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+
+/**
+ * Event listener for HTTP server "error" event.
  */
 
 function onError(error) {
@@ -78,39 +62,34 @@ function onError(error) {
 
   const bind =
     typeof port === 'string'
-      ? `Pipe ${port}`
-      : `Port ${port}`;
+      ? `Pipe ${port}` //'Pipe ' + port
+      : `Port ${port}`; //'Port ' + port;
 
-  // Manejar errores específicos del servidor
+  // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
+      debug(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
-
     case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
+      debug(`${bind} is already in use`);
       process.exit(1);
       break;
-
     default:
       throw error;
   }
 }
 
+server.on('error', onError);
+
 /**
- * Manejador del evento "listening" del servidor HTTP.
+ * Event listener for HTTP server "listening" event.
  */
 
 function onListening() {
   const addr = server.address();
-
-  const bind =
-    typeof addr === 'string'
-      ? `pipe ${addr}`
-      : `port ${addr.port}`;
-
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`💻 Listening on ${bind}`);
-
-  console.log(`🚀 Servidor ejecutándose en http://localhost:${addr.port}`);
 }
+
+server.on('listening', onListening);
