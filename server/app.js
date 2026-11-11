@@ -8,45 +8,36 @@ import path, { dirname } from 'node:path';
 import cookieParser from 'cookie-parser';
 // Importa modulos para manejar logs
 import morgan from 'morgan';
-// Importando biblioteca de debug
-import createDebug from 'debug'; // 👈
 // Imports para crear Dirname
 import { fileURLToPath } from 'node:url';
-// Importando el template engine Handlebars
-import hbs from 'hbs';
 
 // Importar las rutas de la aplicacion
 //var indexRouter = require('./routes/index');
 import indexRouter from '#routes/index.js';
 //var usersRouter = require('./routes/users');
 import usersRouter from '#routes/users.js';
-// Importando el registrador del helper
-import { registerViteHelper } from './lib/vite.js';
+// Importando la funcion de configuracion de Hbs
+import configureHandlebars from './lib/handlebars.js';
 // Importando la configuracion de winston logger
 import logger from './lib/winston.js';
 
-// Creacion del objeto Debug
-const debug = createDebug('dwssr-2026b:server'); // 👈
 // Creando la variables de rutas
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Crear la aplicacion express
-debug('🔨 Creando backend');
+logger.info('🔨 Creando backend');
 const app = express();
 
 // Configurar el motor de vistas con hbs
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
-// Registro Helper
-registerViteHelper(hbs);
+configureHandlebars(app);
 
 // Configurar middlewares de la aplicacion
 app.use(
-  morgan('dev', { 
-    stream: { 
-      write: (msg) => logger.info(msg.trim()) 
-    } 
+  morgan('dev', {
+    stream: {
+      write: (msg) => logger.info(msg.trim()),
+    },
   }),
 );
 
@@ -60,11 +51,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Configurar la carpeta de archivos estaticos
-debug('🔨 Creando servidor de Archivos Estáticos');
+logger.info('🔨 Creando servidor de Archivos Estáticos');
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Registramos las rutas de la aplicacion
-debug('🛣️ Registrando rutas');
+logger.info('🛣️ Registrando rutas');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
@@ -77,21 +68,15 @@ app.use((req, res, next) => {
 app.use((err, req, res, _next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ? {
+    status: err.status || 500,
+    stack: err.stack
+  } : {};
 
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
-
-// Ejemplo de codigo inalcanzable
-// (()=>{
-//   let age = 10
-//   return age
-//   if (age == 10) {
-//     console.log("Codigo")
-//   }
-// })()
 
 // module.exports = app;
 export default app;
